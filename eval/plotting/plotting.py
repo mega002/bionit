@@ -14,7 +14,7 @@ CAPSIZE = 0.05
 
 def plot_coannotation():
     results: pd.DataFrame = State.coannotation_evaluations
-    results = results.melt(ignore_index=False)
+    results = results.melt()
     results["Dataset"] = results.index
     results.columns = ["Standard", "Average Precision", "Dataset"]
 

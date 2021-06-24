@@ -2,14 +2,14 @@
     "features": [
         {
             "name": "Test Features",
-            "path": "bioniceval/datasets/test_features.tsv",
+            "path": "eval/datasets/test_features.tsv",
             "delimiter": ","
         }
     ],
     "networks": [
         {
             "name": "Test Net",
-            "path": "bioniceval/datasets/test_net.txt",
+            "path": "eval/datasets/test_net.txt",
             "delimiter": " "
         }
     ],
@@ -17,13 +17,13 @@
         {
             "name": "Test Coannotation Standard",
             "task": "coannotation",
-            "path": "bioniceval/standards/test_coannotation_standard.txt",
+            "path": "eval/standards/test_coannotation_standard.txt",
             "delimiter": " "
         },
         {
             "name": "Test Cluster Standard",
             "task": "module_detection",
-            "path": "bioniceval/standards/test_module_standard.pickle",
+            "path": "eval/standards/test_module_standard.pickle",
             "samples": 10,
             "methods": [
                 "average",
@@ -37,7 +37,7 @@
         {
             "name": "Test Function Prediction",
             "task": "function_prediction",
-            "path": "bioniceval/standards/test_function_standard.csv",
+            "path": "eval/standards/test_function_standard.csv",
             "delimiter": ",",
             "test_size": 0.1,
             "folds": 5,

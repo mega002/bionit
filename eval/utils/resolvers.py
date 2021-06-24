@@ -6,7 +6,7 @@ from eval.state import State
 
 def resolve_config_path(path: Path):
     if path == Path(path.name):
-        path = Path("bioniceval/config") / path
+        path = Path("eval/config") / path
     name = path.stem
     State.config_path = path
     State.config_name = name

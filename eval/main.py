@@ -40,8 +40,8 @@ def evaluate_task(task: str):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config_path", type=str, required=True)
-    parser.add_argument("--exclude_tasks", nargs='+')
-    parser.add_argument("--exclude_standards", nargs='+')
+    parser.add_argument("--exclude_tasks", nargs='+', default=[])
+    parser.add_argument("--exclude_standards", nargs='+', default=[])
     args = parser.parse_args()
 
     evaluate(Path(args.config_path), args.exclude_tasks, args.exclude_standards)
