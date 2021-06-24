@@ -3,13 +3,13 @@ import argparse
 from pathlib import Path
 from typing import Optional, List
 
-from utils.resolvers import resolve_config_path, resolve_tasks
-from utils.process_config import process_config
-from utils.file_utils import import_datasets
+from eval.utils.resolvers import resolve_config_path, resolve_tasks
+from eval.utils.process_config import process_config
+from eval.utils.file_utils import import_datasets
 
-from evals.coannotation import coannotation_eval
-from evals.module_detection import module_detection_eval
-from evals.function_prediction import function_prediction_eval
+from eval.evals.coannotation import coannotation_eval
+from eval.evals.module_detection import module_detection_eval
+from eval.evals.function_prediction import function_prediction_eval
 
 
 def evaluate(
