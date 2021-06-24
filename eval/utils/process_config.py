@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from ..state import State
+from eval.state import State
 
 
 def process_config(exclude_tasks: List[str], exclude_standards: List[str]):

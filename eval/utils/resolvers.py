@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 
-from ..state import State
+from eval.state import State
 
 
 def resolve_config_path(path: Path):

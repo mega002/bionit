@@ -12,9 +12,9 @@ from scipy.spatial.distance import pdist
 from scipy.cluster.hierarchy import linkage, fcluster, maxdists
 from sklearn.metrics import adjusted_mutual_info_score
 
-from ..state import State
-from ..utils.file_utils import consolidate_features, consolidate_networks
-from ..plotting.plotting import plot_module_detection
+from eval.state import State
+from eval.utils.file_utils import consolidate_features, consolidate_networks
+from eval.plotting.plotting import plot_module_detection
 
 
 def module_detection_eval():

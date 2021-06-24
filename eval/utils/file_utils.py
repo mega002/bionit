@@ -4,7 +4,7 @@ import pandas as pd
 import networkx as nx
 from typing import Optional, Dict, List
 
-from ..state import State
+from eval.state import State
 
 
 def import_datasets(consolidation: str = "union"):

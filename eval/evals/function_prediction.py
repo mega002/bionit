@@ -14,9 +14,9 @@ from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.exceptions import ConvergenceWarning
 from scipy.sparse import csr_matrix
 
-from ..state import State
-from ..utils.file_utils import consolidate_features, consolidate_networks
-from ..plotting.plotting import plot_function_prediction
+from eval.state import State
+from eval.utils.file_utils import consolidate_features, consolidate_networks
+from eval.plotting.plotting import plot_function_prediction
 
 
 def function_prediction_eval():

@@ -1,19 +1,17 @@
-import typer
+import argparse
+
 from pathlib import Path
 from typing import Optional, List
 
-from .utils.resolvers import resolve_config_path, resolve_tasks
-from .utils.process_config import process_config
-from .utils.file_utils import import_datasets
+from utils.resolvers import resolve_config_path, resolve_tasks
+from utils.process_config import process_config
+from utils.file_utils import import_datasets
 
-from .evals.coannotation import coannotation_eval
-from .evals.module_detection import module_detection_eval
-from .evals.function_prediction import function_prediction_eval
-
-app = typer.Typer()
+from evals.coannotation import coannotation_eval
+from evals.module_detection import module_detection_eval
+from evals.function_prediction import function_prediction_eval
 
 
-@app.command("bioniceval")
 def evaluate(
     config_path: Path,
     exclude_tasks: Optional[List[str]] = [],
@@ -40,4 +38,14 @@ def evaluate_task(task: str):
 
 
 def main():
-    app()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config_path", type=str, required=True)
+    parser.add_argument("--exclude_tasks", nargs='+')
+    parser.add_argument("--exclude_standards", nargs='+')
+    args = parser.parse_args()
+
+    evaluate(Path(args.config_path), args.exclude_tasks, args.exclude_standards)
+
+
+if __name__ == '__main__':
+    main()

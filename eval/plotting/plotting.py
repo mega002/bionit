@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from ..state import State
+from eval.state import State
 
 PALETTE = sns.color_palette("BuPu")
 EDGE_WIDTH = 1.25

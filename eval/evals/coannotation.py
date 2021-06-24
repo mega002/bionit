@@ -6,9 +6,9 @@ from pathlib import Path
 from sklearn.metrics import average_precision_score
 from sklearn.metrics.pairwise import cosine_similarity
 
-from ..state import State
-from ..utils.file_utils import consolidate_features, consolidate_networks
-from ..plotting.plotting import plot_coannotation
+from eval.state import State
+from eval.utils.file_utils import consolidate_features, consolidate_networks
+from eval.plotting.plotting import plot_coannotation
 
 
 def coannotation_eval():
