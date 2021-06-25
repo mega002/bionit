@@ -35,7 +35,6 @@ class Preprocessor:
         self.union = self._get_union()
 
     def _load(self, delimiter, scale=True):
-
         typer.echo("Preprocessing input networks...")
 
         graphs = [

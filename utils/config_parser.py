@@ -19,12 +19,12 @@ class DefaultConfig:
         "learning_rate": 0.0005,  # Adam optimizer learning rate
         "embedding_size": 512,  # Dimensionality of output integrated features
         "svd_dim": 0,  # Dimensionality of network SVD approximation (0 will not perform SVD)
-        "initialization": "xavier",  # Method used to initialize BIONIC weights
-        "gat_shapes": {
-            "dimension": 64,  # Dimension of each GAT layer
-            "n_heads": 10,  # Number of attention heads for each GAT layer
-            "n_layers": 2,  # Number of GAT layers for each input network
-        },
+        # "initialization": "xavier",  # Method used to initialize BIONIC weights
+        # "gat_shapes": {
+        #     "dimension": 64,  # Dimension of each GAT layer
+        #     "n_heads": 10,  # Number of attention heads for each GAT layer
+        #     "n_layers": 2,  # Number of GAT layers for each input network
+        # },
         "save_network_scales": False,  # Whether to save internal learned network feature scaling
         "save_model": True,  # Whether to save the trained model or not
         "load_pretrained_model": False,  # Whether to load a pretrained model TODO
@@ -131,5 +131,8 @@ class ConfigParser(DefaultConfig):
             param: self._get_param(param, default)
             for param, default in DefaultConfig._defaults.items()
         }
+        for key, value in self.config.items():
+            if key not in parsed_params:
+                parsed_params[key] = value
         namespace = Namespace(**parsed_params)
         return namespace
