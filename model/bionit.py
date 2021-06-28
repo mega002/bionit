@@ -105,7 +105,7 @@ class Bionit(nn.Module):
         for net_idx in range(self.n_modalities):
             transformers_output = self.transformers[net_idx](
                 input_ids=node_ids.unsqueeze(dim=0),
-                attention_mask=masks[node_ids, net_idx].unsqueeze(dim=0)
+                # attention_mask=masks[node_ids, net_idx].unsqueeze(dim=0)
             )
             x = transformers_output.last_hidden_state[0]
             x_store_modality += x
