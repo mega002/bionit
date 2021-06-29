@@ -1,0 +1,146 @@
+{
+    "features": [
+        {
+            "name": "Features",
+            "path": "outputs/costanzo_hu_krogan_features.tsv",
+            "delimiter": "\t"
+        }
+    ],
+    "networks": [
+        {
+            "name": "Costanzo Net",
+            "path": "inputs/Costanzo.txt",
+            "delimiter": " "
+        },
+        {
+            "name": "Hu Net",
+            "path": "inputs/Hu.txt",
+            "delimiter": " "
+        },
+        {
+            "name": "Krogan Net",
+            "path": "inputs/Krogan.txt",
+            "delimiter": " "
+        }
+    ],
+    "standards": [
+        {
+            "name": "GO BP Yeast Coannotation Standard",
+            "task": "coannotation",
+            "path": "eval/standards/GO_BP_coannotation_yeast.csv",
+            "delimiter": ","
+        },
+        {
+            "name": "IntAct Yeast Coannotation Standard",
+            "task": "coannotation",
+            "path": "eval/standards/IntAct_coannotation_yeast.csv",
+            "delimiter": ","
+        },
+        {
+            "name": "KEGG Yeast Coannotation Standard",
+            "task": "coannotation",
+            "path": "eval/standards/KEGG_coannotation_yeast.csv",
+            "delimiter": ","
+        },
+        {
+            "name": "GO BP Yeast Cluster Standard",
+            "task": "module_detection",
+            "path": "eval/standards/GO_BP_modules_yeast.pickle",
+            "samples": 10,
+            "methods": [
+                "average",
+                "complete"
+            ],
+            "metrics": [
+                "cosine"
+            ],
+            "thresholds": 10
+        },
+        {
+            "name": "IntAct Yeast Cluster Standard",
+            "task": "module_detection",
+            "path": "eval/standards/IntAct_modules_yeast.pickle",
+            "samples": 10,
+            "methods": [
+                "average",
+                "complete"
+            ],
+            "metrics": [
+                "cosine"
+            ],
+            "thresholds": 10
+        },
+        {
+            "name": "KEGG Yeast Cluster Standard",
+            "task": "module_detection",
+            "path": "eval/standards/KEGG_modules_yeast.pickle",
+            "samples": 10,
+            "methods": [
+                "average",
+                "complete"
+            ],
+            "metrics": [
+                "cosine"
+            ],
+            "thresholds": 10
+        },
+        {
+            "name": "GO BP Yeast Function Prediction",
+            "task": "function_prediction",
+            "path": "eval/standards/GO_BP_classes_yeast.csv",
+            "delimiter": ",",
+            "test_size": 0.1,
+            "folds": 5,
+            "trials": 10,
+            "gamma": {
+                "minimum": 1e-6,
+                "maximum": 1e-1,
+                "samples": 10
+            },
+            "regularization": {
+                "minimum": 1e-2,
+                "maximum": 1e3,
+                "samples": 50
+            }
+        },
+        {
+            "name": "IntAct Yeast Function Prediction",
+            "task": "function_prediction",
+            "path": "eval/standards/IntAct_classes_yeast.csv",
+            "delimiter": ",",
+            "test_size": 0.1,
+            "folds": 5,
+            "trials": 10,
+            "gamma": {
+                "minimum": 1e-6,
+                "maximum": 1e-1,
+                "samples": 10
+            },
+            "regularization": {
+                "minimum": 1e-2,
+                "maximum": 1e3,
+                "samples": 50
+            }
+        },
+        {
+            "name": "KEGG Yeast Function Prediction",
+            "task": "function_prediction",
+            "path": "eval/standards/KEGG_classes_yeast.csv",
+            "delimiter": ",",
+            "test_size": 0.1,
+            "folds": 5,
+            "trials": 10,
+            "gamma": {
+                "minimum": 1e-6,
+                "maximum": 1e-1,
+                "samples": 10
+            },
+            "regularization": {
+                "minimum": 1e-2,
+                "maximum": 1e3,
+                "samples": 50
+            }
+        }
+    ],
+    "consolidation": "union"
+}
