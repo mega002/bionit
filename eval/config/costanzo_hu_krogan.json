@@ -25,25 +25,25 @@
     ],
     "standards": [
         {
-            "name": "GO BP Yeast Coannotation Standard",
+            "name": "GO BP",
             "task": "coannotation",
             "path": "eval/standards/GO_BP_coannotation_yeast.csv",
             "delimiter": ","
         },
         {
-            "name": "IntAct Yeast Coannotation Standard",
+            "name": "IntAct",
             "task": "coannotation",
             "path": "eval/standards/IntAct_coannotation_yeast.csv",
             "delimiter": ","
         },
         {
-            "name": "KEGG Yeast Coannotation Standard",
+            "name": "KEGG",
             "task": "coannotation",
             "path": "eval/standards/KEGG_coannotation_yeast.csv",
             "delimiter": ","
         },
         {
-            "name": "GO BP Yeast Cluster Standard",
+            "name": "GO BP",
             "task": "module_detection",
             "path": "eval/standards/GO_BP_modules_yeast.pickle",
             "samples": 10,
@@ -57,7 +57,7 @@
             "thresholds": 10
         },
         {
-            "name": "IntAct Yeast Cluster Standard",
+            "name": "IntAct",
             "task": "module_detection",
             "path": "eval/standards/IntAct_modules_yeast.pickle",
             "samples": 10,
@@ -71,7 +71,7 @@
             "thresholds": 10
         },
         {
-            "name": "KEGG Yeast Cluster Standard",
+            "name": "KEGG",
             "task": "module_detection",
             "path": "eval/standards/KEGG_modules_yeast.pickle",
             "samples": 10,
@@ -85,7 +85,7 @@
             "thresholds": 10
         },
         {
-            "name": "GO BP Yeast Function Prediction",
+            "name": "GO BP",
             "task": "function_prediction",
             "path": "eval/standards/GO_BP_classes_yeast.csv",
             "delimiter": ",",
@@ -104,7 +104,7 @@
             }
         },
         {
-            "name": "IntAct Yeast Function Prediction",
+            "name": "IntAct",
             "task": "function_prediction",
             "path": "eval/standards/IntAct_classes_yeast.csv",
             "delimiter": ",",
@@ -123,7 +123,7 @@
             }
         },
         {
-            "name": "KEGG Yeast Function Prediction",
+            "name": "KEGG",
             "task": "function_prediction",
             "path": "eval/standards/KEGG_classes_yeast.csv",
             "delimiter": ",",
