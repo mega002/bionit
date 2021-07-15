@@ -4,11 +4,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from torch_sparse import SparseTensor
-from transformers import BertConfig, LongformerConfig
+from transformers import BertConfig, BertModel
 
-from model.modeling_bert import BertModel
-
-from model.modeling_longformer import LongformerModel
 from utils.common import Device
 
 from typing import Dict, List, Optional
@@ -49,14 +46,15 @@ class Bionit(nn.Module):
         # Transformers
         for i in range(self.n_modalities):
             self.transformers.append(
-                LongformerModel(
-                    config=LongformerConfig(
+                BertModel(
+                    config=BertConfig(
                         vocab_size=self.in_size,
                         hidden_size=self.hidden_size,
                         num_hidden_layers=transformer_config["num_hidden_layers"],
                         intermediate_size=transformer_config["intermediate_size"],
                         position_embedding_type="none",
-                        num_attention_heads=transformer_config["num_attention_heads"]
+                        num_attention_heads=transformer_config["num_attention_heads"],
+                        max_position_embeddings=max_size
                     )
                 )
             )
