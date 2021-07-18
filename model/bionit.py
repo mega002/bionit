@@ -4,7 +4,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from torch_sparse import SparseTensor
-from transformers import BertConfig, BertModel
+from transformers import BertConfig
+from model.modeling_bert import BertModel
 
 from model.layers import Interp
 from utils.common import Device
