@@ -10,40 +10,10 @@ from model.loss import masked_scaled_mse
 from model.bionic import Bionic
 from trainer import Trainer
 from utils.common import Device, cyan
-from utils.sampler import StatefulSampler, NeighborSamplerWithWeights
+from utils.sampler import StatefulSampler
 
 
 class TrainerBionic(Trainer):
-    def __init__(self, config: Union[Path, dict]):
-
-        super().__init__(config)
-        self.train_loaders = self._make_train_loaders()
-        self.inference_loaders = self._make_inference_loaders()
-
-    def _make_train_loaders(self):
-        return [
-            NeighborSamplerWithWeights(
-                ad,
-                sizes=[10] * self.params.gat_shapes["n_layers"],
-                batch_size=self.params.batch_size,
-                shuffle=False,
-                sampler=StatefulSampler(torch.arange(len(self.index))),
-            )
-            for ad in self.adj
-        ]
-
-    def _make_inference_loaders(self):
-        return [
-            NeighborSamplerWithWeights(
-                ad,
-                sizes=[-1] * self.params.gat_shapes["n_layers"],  # all neighbors
-                batch_size=1,
-                shuffle=False,
-                sampler=StatefulSampler(torch.arange(len(self.index))),
-            )
-            for ad in self.adj
-        ]
-
     def _init_model(self):
         model = Bionic(
             len(self.index),
@@ -144,20 +114,5 @@ class TrainerBionic(Trainer):
 
         return output, losses
 
-    def _build_embeddings(self):
-        # Build embedding one node at a time
-        emb_list = []
-
-        # TODO: add verbosity control
-        with typer.progressbar(
-                zip(self.masks, self.index, *self.inference_loaders),
-                label=f"{cyan('Forward Pass')}:",
-                length=len(self.index),
-        ) as progress:
-            for mask, idx, *data_flows in progress:
-                mask = mask.reshape((1, -1))
-                dot, emb, _, learned_scales = self.model(
-                    self.adj, data_flows, self.features, mask, evaluate=True
-                )
-                emb_list.append(emb.detach().cpu().numpy())
-        return emb_list, learned_scales
+    def get_num_layers(self):
+        return self.params.gat_shapes["n_layers"]

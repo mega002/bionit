@@ -14,7 +14,7 @@ from utils.common import extend_path, cyan, magenta, Device
 from utils.config_parser import ConfigParser
 from utils.plotter import plot_losses
 from utils.preprocessor import Preprocessor
-from utils.sampler import StatefulSampler
+from utils.sampler import StatefulSampler, NeighborSamplerWithWeights
 
 
 class Trainer(ABC):
@@ -47,6 +47,9 @@ class Trainer(ABC):
         self.index, self.masks, self.weights, self.features, self.adj = self._preprocess_inputs()
         self.model, self.optimizer = self._init_model()
 
+        self.train_loaders = self._make_train_loaders()
+        self.inference_loaders = self._make_inference_loaders()
+
     def _parse_config(self, config):
         cp = ConfigParser(config)
         return cp.parse()
@@ -64,6 +67,30 @@ class Trainer(ABC):
     @abstractmethod
     def _init_model(self):
         raise NotImplementedError()
+
+    def _make_train_loaders(self):
+        return [
+            NeighborSamplerWithWeights(
+                ad,
+                sizes=[10] * self.get_num_layers(),
+                batch_size=self.params.batch_size,
+                shuffle=False,
+                sampler=StatefulSampler(torch.arange(len(self.index))),
+            )
+            for ad in self.adj
+        ]
+
+    def _make_inference_loaders(self):
+        return [
+            NeighborSamplerWithWeights(
+                ad,
+                sizes=[-1] * self.get_num_layers(),  # all neighbors
+                batch_size=1,
+                shuffle=False,
+                sampler=StatefulSampler(torch.arange(len(self.index))),
+            )
+            for ad in self.adj
+        ]
 
     def train(self, verbosity: Optional[int] = 1):
         """Trains BIONIC model.
@@ -219,6 +246,24 @@ class Trainer(ABC):
 
         typer.echo(magenta("Complete!"))
 
-    @abstractmethod
     def _build_embeddings(self):
-        raise NotImplementedError()
+        # Build embedding one node at a time
+        emb_list = []
+
+        # TODO: add verbosity control
+        with typer.progressbar(
+                zip(self.masks, self.index, *self.inference_loaders),
+                label=f"{cyan('Forward Pass')}:",
+                length=len(self.index),
+        ) as progress:
+            for mask, idx, *data_flows in progress:
+                mask = mask.reshape((1, -1))
+                dot, emb, _, learned_scales = self.model(
+                    self.adj, data_flows, self.features, mask, evaluate=True
+                )
+                emb_list.append(emb.detach().cpu().numpy())
+        return emb_list, learned_scales
+
+    @abstractmethod
+    def get_num_layers(self):
+        raise NotImplementedError

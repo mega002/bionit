@@ -43,6 +43,7 @@ class TrainerBionit(Trainer):
         # Initialize loaders to current batch.
         assert not bool(self.params.sample_size)
 
+        batch_loaders = self.train_loaders
         mask_splits = torch.split(self.masks[rand_int].to(Device()), self.params.batch_size)
         if isinstance(self.features, list):
             batch_features = self.features
@@ -51,13 +52,13 @@ class TrainerBionit(Trainer):
         losses = [0.0 for _ in range(len(self.adj))]
 
         # Get the data flow for each input, stored in a tuple.
-        for batch_masks, node_ids in zip(mask_splits, int_splits):
+        for batch_masks, node_ids, *data_flows in zip(mask_splits, int_splits, *batch_loaders):
             self.optimizer.zero_grad()
             assert not bool(self.params.sample_size)
 
             training_datasets = self.adj
             output, _, _, _ = self.model(
-                training_datasets, batch_features, batch_masks, node_ids
+                training_datasets, data_flows, batch_features, batch_masks, rand_net_idxs=rand_net_idx
             )
             curr_losses = [
                 masked_scaled_mse(
@@ -74,14 +75,6 @@ class TrainerBionit(Trainer):
 
         return output, losses
 
-    def _build_embeddings(self):
-        # Build embedding one node at a time
-        emb_list = []
-
-        input_id = torch.arange(0, len(self.index)).to(Device())
-        dot, emb, _, learned_scales = self.model(
-            self.adj, self.features, self.masks, input_id, evaluate=True
-        )
-        emb_list.append(emb.detach().cpu().numpy())
-        return emb_list, learned_scales
+    def get_num_layers(self):
+        return self.params.transformer_config["num_hidden_layers"]
 
