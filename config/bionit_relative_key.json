@@ -4,16 +4,16 @@
     "inputs/Hu.txt",
     "inputs/Krogan.txt"
   ],
-  "out_name": "outputs/bionit_costanzo_hu_krogan",
+  "out_name": "outputs/bionit_relative_key",
   "epochs": 10000,
-  "batch_size": 1024,
+  "batch_size": 500,
   "learning_rate": 0.0005,
   "transformer_config": {
-    "hidden_size": 768,
+    "hidden_size": 256,
     "num_hidden_layers": 4,
     "intermediate_size": 512,
     "num_attention_heads": 8,
-    "position_embedding_type": "none"
+    "position_embedding_type": "relative_key"
   },
   "embedding_size": 512,
   "save_model": true,

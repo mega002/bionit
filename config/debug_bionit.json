@@ -12,7 +12,8 @@
     "hidden_size": 120,
     "num_hidden_layers": 3,
     "intermediate_size": 100,
-    "num_attention_heads": 3
+    "num_attention_heads": 3,
+    "position_embedding_type": "none"
   },
   "embedding_size": 100,
   "save_model": true,

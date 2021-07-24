@@ -2,7 +2,7 @@ import torch
 import typer
 from transformers import AdamW
 
-from model.bionit import Bionit
+from model.bionit import Bionit, get_edge_buckets_by_weights
 from model.loss import masked_scaled_mse
 from trainer import Trainer
 from utils.common import Device, cyan
@@ -11,12 +11,15 @@ from utils.sampler import StatefulSampler
 
 class TrainerBionit(Trainer):
     def _init_model(self):
+        edge_buckets = self.create_edge_buckets()
+
         model = Bionit(
             len(self.index),
             self.params.transformer_config,
             self.params.embedding_size,
             len(self.adj),
             self.params.batch_size,
+            edge_buckets
         )
 
         # Load pretrained model
@@ -30,6 +33,22 @@ class TrainerBionit(Trainer):
         optimizer = AdamW(model.parameters(), lr=self.params.learning_rate)
 
         return model, optimizer
+
+    def create_edge_buckets(self):
+        modalities_edge_buckets = []
+        for i in range(len(self.adj)):
+
+            edge_weight = self.adj[i].edge_weight
+            edge_buckets = torch.unique(get_edge_buckets_by_weights(edge_weight, edge_weight.device))
+
+            # convert the buckets tensor to list for adding 0 bucket for the node pairs that aren't connected by an edge
+            list_of_edge_buckets = edge_buckets.tolist()
+            list_of_edge_buckets.insert(0, 0)
+            edge_buckets = torch.Tensor(list_of_edge_buckets).to(edge_weight.device).int()
+
+            modalities_edge_buckets.append(edge_buckets)
+
+        return modalities_edge_buckets
 
     def _train_step(self, rand_net_idx=None):
         """Defines training behaviour.

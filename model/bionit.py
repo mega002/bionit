@@ -22,7 +22,8 @@ class Bionit(nn.Module):
         transformer_config: Dict,
         emb_size: int,
         n_modalities: int,
-        max_size: int
+        max_size: int,
+        edge_buckets: List
     ):
         """The BIONIC model.
 
@@ -46,6 +47,8 @@ class Bionit(nn.Module):
         self.pre_gat_layers = []
         self.transformers = []
         self.post_gat_layers = []  # Dense transform after each GAT encoder.
+        self.edge_buckets = edge_buckets
+        self.position_embedding_type = transformer_config["position_embedding_type"]
 
         # Transformers
         for i in range(self.n_modalities):
@@ -56,9 +59,9 @@ class Bionit(nn.Module):
                         hidden_size=self.hidden_size,
                         num_hidden_layers=transformer_config["num_hidden_layers"],
                         intermediate_size=transformer_config["intermediate_size"],
-                        position_embedding_type="none",
+                        position_embedding_type=self.position_embedding_type,
                         num_attention_heads=transformer_config["num_attention_heads"],
-                        max_position_embeddings=max_size
+                        max_position_embeddings=self.get_num_of_position_embeddings(i, max_size)
                     )
                 )
             )
@@ -116,15 +119,44 @@ class Bionit(nn.Module):
         )  # Tensor to store results from each modality.
 
         # Iterate over input networks
-        for i, data_flow in enumerate(data_flows):
-            net_idx = idxs[i]
+        for modality, data_flow in enumerate(data_flows):
+            net_idx = idxs[modality]
 
             _, n_id, adjs = data_flow
 
             n_id = n_id.to(Device())
+            dataset_edge_index = datasets[modality].edge_index.to(Device())
+            dataset_edge_weight = datasets[modality].edge_weight.to(Device())
+
+            batch_edges = None
+            if self.position_embedding_type != "none":
+
+                ds_num_of_edges = dataset_edge_index.size(1)
+                batch_edge_first_node_nid_index_mask = \
+                    dataset_edge_index[0].unsqueeze(dim=0).T == n_id.repeat(ds_num_of_edges, 1)
+                batch_edge_second_node_nid_index_mask = \
+                    dataset_edge_index[1].unsqueeze(dim=0).T == n_id.repeat(ds_num_of_edges, 1)
+
+                n_id_edge_mask = (torch.sum(batch_edge_first_node_nid_index_mask, 1) +
+                                  torch.sum(batch_edge_second_node_nid_index_mask, 1)).eq(2)
+
+                batch_edge_first_node_nid_index = \
+                    torch.nonzero(batch_edge_first_node_nid_index_mask[n_id_edge_mask])[:, 1]
+                batch_edge_second_node_nid_index = \
+                    torch.nonzero(batch_edge_second_node_nid_index_mask[n_id_edge_mask])[:, 1]
+
+                batch_edge_index = torch.stack((batch_edge_first_node_nid_index, batch_edge_second_node_nid_index))
+                batch_edge_weights = dataset_edge_weight[n_id_edge_mask]
+
+                batch_edge_values = self.get_batch_edge_values(batch_edge_weights, modality)
+
+                batch_edges = torch.sparse_coo_tensor(batch_edge_index,
+                                                      batch_edge_values,
+                                                      (len(n_id), len(n_id)),
+                                                      device=Device()).to_dense()
 
             transformers_output = self.transformers[net_idx](
-                input_ids=n_id.unsqueeze(dim=0),
+                input_ids=n_id.unsqueeze(dim=0), distance=batch_edges
                 # attention_mask=masks[node_ids, net_idx].unsqueeze(dim=0)
             )
             x = transformers_output.last_hidden_state[0]
@@ -133,7 +165,7 @@ class Bionit(nn.Module):
             x = x[:batch_size]
 
             # batch_idx =
-            x = scales[:, i] * interp_masks[:, i].reshape((-1, 1)) * x
+            x = scales[:, modality] * interp_masks[:, modality].reshape((-1, 1)) * x
             x_store_modality += x
 
         # Embedding
@@ -143,3 +175,30 @@ class Bionit(nn.Module):
         dot = torch.mm(emb, torch.t(emb))
 
         return dot, emb, None, None
+
+    def get_num_of_position_embeddings(self, modality, max_size):
+        if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
+            return len(self.edge_buckets[modality])
+        elif self.position_embedding_type == "relative_weight":
+            return 2
+        elif self.position_embedding_type == "none":
+            return max_size
+        else:
+            raise Exception("the position embedding type is not supported")
+
+    def get_batch_edge_values(self, batch_edge_weights, modality):
+
+        if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
+            batch_edge_buckets = get_edge_buckets_by_weights(batch_edge_weights, Device())
+
+            num_of_edges_in_batch = batch_edge_buckets.size(0)
+            batch_edge_buckets_indices = torch.nonzero(batch_edge_buckets.unsqueeze(dim=0).T ==
+                                                    self.edge_buckets[modality].repeat(num_of_edges_in_batch, 1))[:, 1]
+            return batch_edge_buckets_indices
+        else:
+            return batch_edge_weights
+
+
+def get_edge_buckets_by_weights(weights, device):
+    edge_buckets = torch.round(weights * 1000).int().to(device)
+    return edge_buckets
