@@ -4,7 +4,7 @@
     "inputs/Hu.txt",
     "inputs/Krogan.txt"
   ],
-  "out_name": "outputs/bionit_relative_key",
+  "out_name": "outputs/bionit_relative_key_4_256_fixed",
   "epochs": 10000,
   "batch_size": 500,
   "learning_rate": 0.0005,
