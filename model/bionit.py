@@ -126,7 +126,7 @@ class Bionit(nn.Module):
 
             n_id = n_id.to(Device())
             dataset_edge_index = datasets[modality].edge_index.to(Device())
-            dataset_edge_weight = datasets[modality].edge_weight.to(Device())
+            #dataset_edge_weight = datasets[modality].edge_weight.to(Device())
 
             batch_edges = None
             if self.position_embedding_type != "none":
@@ -140,15 +140,18 @@ class Bionit(nn.Module):
                 n_id_edge_mask = (torch.sum(batch_edge_first_node_nid_index_mask, 1) +
                                   torch.sum(batch_edge_second_node_nid_index_mask, 1)).eq(2)
 
+                #batch_edge_weights = dataset_edge_weight[n_id_edge_mask]
+                all_weights = datasets[modality].adj_t.to(Device()).to_dense()
+                batch_edge_weights = all_weights[dataset_edge_index[0][n_id_edge_mask],
+                                                 dataset_edge_index[1][n_id_edge_mask]]
+                batch_edge_values = self.get_batch_edge_values(batch_edge_weights, modality)
+
                 batch_edge_first_node_nid_index = \
                     torch.nonzero(batch_edge_first_node_nid_index_mask[n_id_edge_mask])[:, 1]
                 batch_edge_second_node_nid_index = \
                     torch.nonzero(batch_edge_second_node_nid_index_mask[n_id_edge_mask])[:, 1]
 
                 batch_edge_index = torch.stack((batch_edge_first_node_nid_index, batch_edge_second_node_nid_index))
-                batch_edge_weights = dataset_edge_weight[n_id_edge_mask]
-
-                batch_edge_values = self.get_batch_edge_values(batch_edge_weights, modality)
 
                 batch_edges = torch.sparse_coo_tensor(batch_edge_index,
                                                       batch_edge_values,
