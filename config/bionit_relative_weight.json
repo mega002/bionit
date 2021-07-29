@@ -6,7 +6,7 @@
   ],
   "out_name": "outputs/bionit_relative_weight",
   "epochs": 10000,
-  "batch_size": 500,
+  "batch_size": 100,
   "learning_rate": 0.0005,
   "transformer_config": {
     "hidden_size": 512,
