@@ -243,10 +243,12 @@ class BertSelfAttention(nn.Module):
 
         self.dropout = nn.Dropout(config.attention_probs_dropout_prob)
         self.position_embedding_type = getattr(config, "position_embedding_type", "absolute")
-        if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
+        if self.position_embedding_type in ["relative_key", "relative_key_query", "relative_weight"]:
             self.max_position_embeddings = config.max_position_embeddings
             #self.distance_embedding = nn.Embedding(2 * config.max_position_embeddings - 1, self.attention_head_size)
             self.distance_embedding = nn.Embedding(config.max_position_embeddings, self.attention_head_size)
+            if self.position_embedding_type in ["relative_weight"]:
+                self.distance_value_embedding = nn.Embedding(config.max_position_embeddings, self.attention_head_size)
 
         self.is_decoder = config.is_decoder
 
@@ -324,6 +326,14 @@ class BertSelfAttention(nn.Module):
                 relative_position_scores_key = torch.einsum("bhrd,lrd->bhlr", key_layer, positional_embedding)
                 attention_scores = attention_scores + relative_position_scores_query + relative_position_scores_key
 
+        if self.position_embedding_type == "relative_weight":
+            positional_embedding_pos = self.distance_embedding.weight[0].unsqueeze(0).unsqueeze(0)*distance.unsqueeze(-1)
+            positional_embedding_neg = self.distance_embedding.weight[1].unsqueeze(0).unsqueeze(0)*(1-distance).unsqueeze(-1)
+            positional_embedding = positional_embedding_pos + positional_embedding_neg
+
+            relative_position_scores = torch.einsum("bhld,lrd->bhlr", query_layer, positional_embedding)
+            attention_scores = attention_scores + relative_position_scores
+
         attention_scores = attention_scores / math.sqrt(self.attention_head_size)
         if attention_mask is not None:
             # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
@@ -344,6 +354,12 @@ class BertSelfAttention(nn.Module):
             attention_probs = attention_probs * head_mask
 
         context_layer = torch.matmul(attention_probs, value_layer)
+        if self.position_embedding_type == "relative_weight":
+            positional_embedding_pos = self.distance_value_embedding.weight[0].unsqueeze(0).unsqueeze(0)*distance.unsqueeze(-1)
+            positional_embedding_neg = self.distance_value_embedding.weight[1].unsqueeze(0).unsqueeze(0)*(1-distance).unsqueeze(-1)
+            positional_embedding = positional_embedding_pos + positional_embedding_neg
+
+            context_layer += torch.einsum("bhxy,yad->bhxd", attention_probs, positional_embedding)
 
         context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
