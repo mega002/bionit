@@ -1,0 +1,21 @@
+{
+  "names": [
+    "inputs/debug/Costanzo.txt",
+    "inputs/debug/Hu.txt",
+    "inputs/debug/Krogan.txt"
+  ],
+  "out_name": "outputs/bionit_relative_weight_debug",
+  "epochs": 3,
+  "batch_size": 500,
+  "learning_rate": 0.0005,
+  "transformer_config": {
+    "hidden_size": 256,
+    "num_hidden_layers": 4,
+    "intermediate_size": 512,
+    "num_attention_heads": 8,
+    "position_embedding_type": "mult_att"
+  },
+  "embedding_size": 512,
+  "save_model": true,
+  "plot_loss": true
+}

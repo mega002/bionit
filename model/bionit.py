@@ -130,7 +130,6 @@ class Bionit(nn.Module):
 
             batch_edges = None
             if self.position_embedding_type != "none":
-
                 ds_num_of_edges = dataset_edge_index.size(1)
                 batch_edge_first_node_nid_index_mask = \
                     dataset_edge_index[0].unsqueeze(dim=0).T == n_id.repeat(ds_num_of_edges, 1)
@@ -185,6 +184,8 @@ class Bionit(nn.Module):
         elif self.position_embedding_type == "relative_weight":
             return 2
         elif self.position_embedding_type == "none":
+            return max_size
+        elif self.position_embedding_type == "mult_att":
             return max_size
         else:
             raise Exception("the position embedding type is not supported")

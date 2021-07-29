@@ -329,6 +329,9 @@ class BertSelfAttention(nn.Module):
             # Apply the attention mask is (precomputed for all layers in BertModel forward() function)
             attention_scores = attention_scores + attention_mask
 
+        if self.position_embedding_type == "mult_att":
+            attention_scores = attention_scores*distance.unsqueeze(0).unsqueeze(0)
+
         # Normalize the attention scores to probabilities.
         attention_probs = nn.Softmax(dim=-1)(attention_scores)
 
