@@ -340,7 +340,7 @@ class BertSelfAttention(nn.Module):
             attention_scores = attention_scores + attention_mask
 
         if self.position_embedding_type == "mult_att":
-            attention_scores = attention_scores*distance.unsqueeze(0).unsqueeze(0)
+            attention_scores = attention_scores + torch.log(distance + 1e-12).unsqueeze(0).unsqueeze(0)
 
         # Normalize the attention scores to probabilities.
         attention_probs = nn.Softmax(dim=-1)(attention_scores)
