@@ -41,17 +41,25 @@ def main():
     #
     # Evaluation
     #
-    time_start = time.time()
-    config_filename = config_path.name
-    eval_config_path = os.path.join(base_eval_config_dir, config_filename)
+    # get the training output from the input configuration.
     with open(args.config_path, "r") as fd:
         train_config = json.load(fd)
         features_path = train_config["out_name"] + "_features.tsv"
+
+    # load the default evaluation configuration, and modify the features path.
     with open(base_eval_config_path, "r") as fd:
         eval_config = json.load(fd)
         assert len(eval_config["features"]) == 1
         eval_config["features"][0]["path"] = features_path
 
+    # save the new evaluation configuration.
+    config_filename = config_path.name
+    eval_config_path = os.path.join(base_eval_config_dir, config_filename)
+    with open(eval_config_path, "w") as fd:
+        json.dump(eval_config, fd, indent=4)
+
+    # run evaluation
+    time_start = time.time()
     evaluate(Path(eval_config_path),
              exclude_tasks=["coannotation", "function_prediction"])
     time_end = time.time()
