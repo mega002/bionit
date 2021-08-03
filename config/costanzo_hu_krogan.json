@@ -13,6 +13,7 @@
     "n_heads": 10,
     "n_layers": 2
   },
+  "initialization": "xavier",
   "embedding_size": 512,
   "save_model": true,
   "plot_loss": true
