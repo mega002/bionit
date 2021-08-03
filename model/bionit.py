@@ -62,8 +62,10 @@ class Bionit(nn.Module):
                 max_position_embeddings=self.get_num_of_position_embeddings(i, max_size)
             )
             if "dropout" in transformer_config:
-                config["attention_probs_dropout_prob"] = transformer_config["dropout"]
-                config["hidden_dropout_prob"] = transformer_config["dropout"]
+                config.update({
+                    "attention_probs_dropout_prob": transformer_config["dropout"],
+                    "hidden_dropout_prob": transformer_config["dropout"]
+                })
             self.transformers.append(
                 BertModel(config=config)
             )
