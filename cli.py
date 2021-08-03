@@ -36,7 +36,7 @@ def main():
     trainer.train()
     trainer.forward()
     time_end = time.time()
-    print(f"Done training, it took {time_start-time_end} time.")
+    print(f"Done training, it took {round(time_end - time_start, 2)} seconds.")
 
     #
     # Evaluation
@@ -63,7 +63,7 @@ def main():
     evaluate(Path(eval_config_path),
              exclude_tasks=["coannotation", "function_prediction"])
     time_end = time.time()
-    print(f"Done evaluating, it took {time_start - time_end} time.")
+    print(f"Done evaluating, it took {round(time_end - time_start, 2)} seconds.")
 
 
 if __name__ == '__main__':
