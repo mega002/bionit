@@ -52,18 +52,20 @@ class Bionit(nn.Module):
 
         # Transformers
         for i in range(self.n_modalities):
+            config = BertConfig(
+                vocab_size=self.in_size,
+                hidden_size=self.hidden_size,
+                num_hidden_layers=transformer_config["num_hidden_layers"],
+                intermediate_size=transformer_config["intermediate_size"],
+                position_embedding_type=self.position_embedding_type,
+                num_attention_heads=transformer_config["num_attention_heads"],
+                max_position_embeddings=self.get_num_of_position_embeddings(i, max_size)
+            )
+            if "dropout" in transformer_config:
+                config["attention_probs_dropout_prob"] = transformer_config["dropout"]
+                config["hidden_dropout_prob"] = transformer_config["dropout"]
             self.transformers.append(
-                BertModel(
-                    config=BertConfig(
-                        vocab_size=self.in_size,
-                        hidden_size=self.hidden_size,
-                        num_hidden_layers=transformer_config["num_hidden_layers"],
-                        intermediate_size=transformer_config["intermediate_size"],
-                        position_embedding_type=self.position_embedding_type,
-                        num_attention_heads=transformer_config["num_attention_heads"],
-                        max_position_embeddings=self.get_num_of_position_embeddings(i, max_size)
-                    )
-                )
+                BertModel(config=config)
             )
             delattr(self.transformers[-1].embeddings, 'token_type_ids')
 
