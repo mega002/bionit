@@ -6,14 +6,15 @@
   ],
   "out_name": "outputs/bionit_relative_weight",
   "epochs": 10000,
-  "batch_size": 100,
+  "batch_size": 480,
   "learning_rate": 0.0005,
   "transformer_config": {
     "hidden_size": 400,
-    "num_hidden_layers": 3,
+    "num_hidden_layers": 2,
     "intermediate_size": 512,
     "num_attention_heads": 8,
-    "position_embedding_type": "relative_weight"
+    "position_embedding_type": "relative_weight",
+    "dropout": 0
   },
   "embedding_size": 512,
   "save_model": true,

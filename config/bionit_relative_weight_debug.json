@@ -13,7 +13,8 @@
     "num_hidden_layers": 4,
     "intermediate_size": 512,
     "num_attention_heads": 8,
-    "position_embedding_type": "relative_weight"
+    "position_embedding_type": "relative_weight",
+    "dropout": 0
   },
   "embedding_size": 512,
   "save_model": true,

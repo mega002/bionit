@@ -328,8 +328,8 @@ class BertSelfAttention(nn.Module):
 
         if self.position_embedding_type == "relative_weight":
             positional_embedding_pos = self.distance_embedding.weight[0].unsqueeze(0).unsqueeze(0)*distance.unsqueeze(-1)
-            positional_embedding_neg = self.distance_embedding.weight[1].unsqueeze(0).unsqueeze(0)*(1-distance).unsqueeze(-1)
-            positional_embedding = positional_embedding_pos + positional_embedding_neg
+            # positional_embedding_neg = self.distance_embedding.weight[1].unsqueeze(0).unsqueeze(0)*(1-distance).unsqueeze(-1)
+            positional_embedding = positional_embedding_pos  # + positional_embedding_neg
 
             relative_position_scores = torch.einsum("bhld,lrd->bhlr", query_layer, positional_embedding)
             attention_scores = attention_scores + relative_position_scores
@@ -356,10 +356,10 @@ class BertSelfAttention(nn.Module):
         context_layer = torch.matmul(attention_probs, value_layer)
         if self.position_embedding_type == "relative_weight":
             positional_embedding_pos = self.distance_value_embedding.weight[0].unsqueeze(0).unsqueeze(0)*distance.unsqueeze(-1)
-            positional_embedding_neg = self.distance_value_embedding.weight[1].unsqueeze(0).unsqueeze(0)*(1-distance).unsqueeze(-1)
-            positional_embedding = positional_embedding_pos + positional_embedding_neg
+            # positional_embedding_neg = self.distance_value_embedding.weight[1].unsqueeze(0).unsqueeze(0)*(1-distance).unsqueeze(-1)
+            positional_embedding = positional_embedding_pos  # + positional_embedding_neg
 
-            context_layer += torch.einsum("bhxy,yad->bhxd", attention_probs, positional_embedding)
+            context_layer += torch.einsum("bhlr,lrd->bhld", attention_probs, positional_embedding)
 
         context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
