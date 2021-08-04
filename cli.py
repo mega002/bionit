@@ -44,7 +44,7 @@ def main():
     # get the training output from the input configuration.
     with open(args.config_path, "r") as fd:
         train_config = json.load(fd)
-        features_path = train_config["out_name"] + "_features.tsv"
+        features_path = Path(train_config["out_name"]).name + "_features.tsv"
 
     # load the default evaluation configuration, and modify the features path.
     with open(base_eval_config_path, "r") as fd:
