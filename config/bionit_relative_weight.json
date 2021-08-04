@@ -5,7 +5,7 @@
     "inputs/Krogan.txt"
   ],
   "out_name": "outputs/bionit_relative_weight",
-  "epochs": 10000,
+  "epochs": 3000,
   "batch_size": 480,
   "learning_rate": 0.0005,
   "transformer_config": {
