@@ -53,7 +53,7 @@ def main():
         eval_config["features"][0]["path"] = features_path
 
     # save the new evaluation configuration.
-    config_filename = Path(train_config["out_name"]) + ".json"
+    config_filename = Path(train_config["out_name"]).name + ".json"
     eval_config_path = os.path.join(base_eval_config_dir, config_filename)
     with open(eval_config_path, "w") as fd:
         json.dump(eval_config, fd, indent=4)
