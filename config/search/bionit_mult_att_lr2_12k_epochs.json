@@ -1,0 +1,21 @@
+{
+  "names": [
+    "inputs/Costanzo.txt",
+    "inputs/Hu.txt",
+    "inputs/Krogan.txt"
+  ],
+  "out_name": "outputs/bionit_mult_att_lr2_12k_epochs",
+  "epochs": 6000,
+  "batch_size": 500,
+  "learning_rate": 0.0002,
+  "transformer_config": {
+    "hidden_size": 640,
+    "num_hidden_layers": 3,
+    "intermediate_size": 512,
+    "num_attention_heads": 10,
+    "position_embedding_type": "mult_att"
+  },
+  "embedding_size": 512,
+  "save_model": true,
+  "plot_loss": true
+}

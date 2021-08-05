@@ -72,7 +72,7 @@ class Trainer(ABC):
         return [
             NeighborSamplerWithWeights(
                 ad,
-                sizes=[5] * 3,
+                sizes=[5] * self.get_num_layers(),
                 batch_size=self.params.batch_size,
                 shuffle=False,
                 sampler=StatefulSampler(torch.arange(len(self.index))),
@@ -84,7 +84,7 @@ class Trainer(ABC):
         return [
             NeighborSamplerWithWeights(
                 ad,
-                sizes=[-1] * 3,  # all neighbors
+                sizes=[-1] * self.get_num_layers(),  # all neighbors
                 batch_size=1,
                 shuffle=False,
                 sampler=StatefulSampler(torch.arange(len(self.index))),
