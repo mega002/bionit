@@ -4,10 +4,10 @@
     "inputs/Hu.txt",
     "inputs/Krogan.txt"
   ],
-  "out_name": "outputs/bionit_relative_weight",
+  "out_name": "outputs/bionit_relative_weight_2",
   "epochs": 3000,
   "batch_size": 480,
-  "learning_rate": 0.0005,
+  "learning_rate": 0.0002,
   "transformer_config": {
     "hidden_size": 400,
     "num_hidden_layers": 2,
