@@ -23,9 +23,10 @@ def save_results_statistics_to_file(results_file_path, output_dir):
     results_statistics = list()
     results_statistics.append(("key1", "key2", "SD", "Mean"))
     for key, results in results.items():
-        stdev = statistics.stdev(results)
-        mean = statistics.mean(results)
-        results_statistics.append((key[0], key[1], stdev, mean))
+        if key[1] == "Features":
+            stdev = statistics.stdev(results)
+            mean = statistics.mean(results)
+            results_statistics.append((key[0], key[1], stdev, mean))
 
     # Save the statistics to a tsv file
     statistics_file_name = \
