@@ -4,12 +4,10 @@ import json
 import os
 import time
 from pathlib import Path
-import csv
-from collections import defaultdict
-import statistics
 
 from trainer_bionic import TrainerBionic
 from trainer_bionit import TrainerBionit
+from utils.statistics_calculator import save_results_statistics_to_file
 from utils.common import create_time_taken_string
 
 from eval.main import evaluate
@@ -18,34 +16,6 @@ from eval.main import evaluate
 base_eval_config_path = "eval/config/costanzo_hu_krogan.json"
 base_eval_config_dir = "eval/config/"
 base_eval_results_dir = "eval/results/"
-
-def aggregate_results(results_file_path):
-    results = defaultdict(list)
-
-    with open(results_file_path) as results_file:
-        csv_reader = csv.reader(results_file, delimiter="\t")
-        line_num = 0
-        for row in csv_reader:
-            if line_num > 0:
-                key1 = row[1]
-                key2 = row[2]
-                score = float(row[3])
-                results[(key1,key2)].append(score)
-            line_num += 1
-
-    aggregated_res = list()
-    aggregated_res.append(("key1", "key2", "SD", "Mean"))
-    for key, results in results.items():
-        stdev = statistics.stdev(results)
-        mean = statistics.mean(results)
-        aggregated_res.append((key[0], key[1], stdev, mean))
-
-    results_dir = os.path.dirname(results_file_path)
-    aggregated_res_file_name = \
-        os.path.splitext(os.path.basename(results_file_path))[0] + "_results.tsv"
-    with open(os.path.join(results_dir, aggregated_res_file_name), 'w') as f:
-        writer = csv.writer(f, delimiter='\t')
-        writer.writerows(aggregated_res)
 
 
 def main():
@@ -98,7 +68,9 @@ def main():
     time_end = time.time()
     print(f"Done evaluating, it took {round(time_end - time_start, 2)} seconds.")
 
-    aggregate_results(os.path.join(base_eval_results_dir, out_name + "_module_detection.tsv"))
+    module_detection_results_file_name = \
+        os.path.join(base_eval_results_dir, out_name + "_module_detection.tsv")
+    save_results_statistics_to_file(module_detection_results_file_name)
 
 
 if __name__ == '__main__':
