@@ -23,7 +23,8 @@ class Bionit(nn.Module):
         emb_size: int,
         n_modalities: int,
         max_size: int,
-        edge_buckets: List
+        edge_buckets: List,
+        buckets_weights_mult: int,
     ):
         """The BIONIC model.
 
@@ -49,6 +50,7 @@ class Bionit(nn.Module):
         self.post_gat_layers = []  # Dense transform after each GAT encoder.
         self.edge_buckets = edge_buckets
         self.position_embedding_type = transformer_config["position_embedding_type"]
+        self.buckets_weights_mult = buckets_weights_mult
 
         # Transformers
         for i in range(self.n_modalities):
@@ -197,7 +199,7 @@ class Bionit(nn.Module):
     def get_batch_edge_values(self, batch_edge_weights, modality):
 
         if self.position_embedding_type == "relative_key" or self.position_embedding_type == "relative_key_query":
-            batch_edge_buckets = get_edge_buckets_by_weights(batch_edge_weights, Device())
+            batch_edge_buckets = get_edge_buckets_by_weights(batch_edge_weights, self.buckets_weights_mult, Device())
 
             num_of_edges_in_batch = batch_edge_buckets.size(0)
             batch_edge_buckets_indices = torch.nonzero(batch_edge_buckets.unsqueeze(dim=0).T ==
@@ -207,6 +209,6 @@ class Bionit(nn.Module):
             return batch_edge_weights
 
 
-def get_edge_buckets_by_weights(weights, device):
-    edge_buckets = torch.round(weights * 1000).int().to(device)
+def get_edge_buckets_by_weights(weights, buckets_weights_mult, device):
+    edge_buckets = torch.round(weights * buckets_weights_mult).int().to(device)
     return edge_buckets

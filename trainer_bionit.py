@@ -19,7 +19,8 @@ class TrainerBionit(Trainer):
             self.params.embedding_size,
             len(self.adj),
             self.params.batch_size,
-            edge_buckets
+            edge_buckets,
+            self.params.buckets_weights_mult
         )
 
         # Load pretrained model
@@ -39,7 +40,9 @@ class TrainerBionit(Trainer):
         for i in range(len(self.adj)):
 
             edge_weight = self.adj[i].edge_weight
-            edge_buckets = torch.unique(get_edge_buckets_by_weights(edge_weight, edge_weight.device))
+            edge_buckets = torch.unique(get_edge_buckets_by_weights(edge_weight,
+                                                                    self.params.buckets_weights_mult,
+                                                                    edge_weight.device))
 
             # convert the buckets tensor to list for adding 0 bucket for the node pairs that aren't connected by an edge
             list_of_edge_buckets = edge_buckets.tolist()
