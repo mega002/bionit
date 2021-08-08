@@ -247,7 +247,7 @@ class BertSelfAttention(nn.Module):
             self.max_position_embeddings = config.max_position_embeddings
             #self.distance_embedding = nn.Embedding(2 * config.max_position_embeddings - 1, self.attention_head_size)
             self.distance_embedding = nn.Embedding(config.max_position_embeddings, self.attention_head_size)
-            if self.position_embedding_type in ["relative_weight"]:
+            if self.position_embedding_type in ["relative_weight", "relative_key"]:
                 self.distance_value_embedding = nn.Embedding(config.max_position_embeddings, self.attention_head_size)
 
         self.is_decoder = config.is_decoder
@@ -359,6 +359,11 @@ class BertSelfAttention(nn.Module):
             # positional_embedding_neg = self.distance_value_embedding.weight[1].unsqueeze(0).unsqueeze(0)*(1-distance).unsqueeze(-1)
             positional_embedding = positional_embedding_pos  # + positional_embedding_neg
 
+            context_layer += torch.einsum("bhlr,lrd->bhld", attention_probs, positional_embedding)
+
+        elif self.position_embedding_type == "relative_key":
+            positional_embedding = self.distance_value_embedding(distance)
+            positional_embedding = positional_embedding.to(dtype=query_layer.dtype)
             context_layer += torch.einsum("bhlr,lrd->bhld", attention_probs, positional_embedding)
 
         context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
