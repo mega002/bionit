@@ -70,7 +70,7 @@ def main():
 
     module_detection_results_file_name = \
         os.path.join(base_eval_results_dir, out_name + "_module_detection.tsv")
-    save_results_statistics_to_file(module_detection_results_file_name)
+    save_results_statistics_to_file(module_detection_results_file_name, base_eval_results_dir)
 
 
 if __name__ == '__main__':
