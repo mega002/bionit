@@ -4,11 +4,11 @@
     "inputs/Hu.txt",
     "inputs/Krogan.txt"
   ],
-  "out_name": "outputs/bionit_relative_key_test",
-  "epochs": 3,
+  "out_name": "outputs/bionit_relative_key_2_400_100",
+  "epochs": 6000,
   "batch_size": 480,
   "learning_rate": 0.0002,
-  "buckets_weights_mult": 1000,
+  "buckets_weights_mult": 100,
   "transformer_config": {
     "hidden_size": 400,
     "num_hidden_layers": 2,
