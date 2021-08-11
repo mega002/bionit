@@ -5,8 +5,8 @@
     "inputs/Krogan.txt"
   ],
   "out_name": "outputs/bionit_mult_att_no_dropout",
-  "epochs": 10000,
-  "batch_size": 500,
+  "epochs": 3000,
+  "batch_size": 2048,
   "learning_rate": 0.0005,
   "transformer_config": {
     "hidden_size": 640,
