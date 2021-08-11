@@ -11,7 +11,12 @@ from utils.sampler import StatefulSampler
 
 class TrainerBionit(Trainer):
     def _init_model(self):
-        edge_buckets = self.create_edge_buckets()
+
+        edge_buckets = None
+        buckets_weights_mult = None
+        if self.params.transformer_config["position_embedding_type"] == "relative_key":
+            buckets_weights_mult = self.params.buckets_weights_mult
+            edge_buckets = self.create_edge_buckets(buckets_weights_mult)
 
         model = Bionit(
             len(self.index),
@@ -20,7 +25,7 @@ class TrainerBionit(Trainer):
             len(self.adj),
             self.params.batch_size,
             edge_buckets,
-            self.params.buckets_weights_mult
+            buckets_weights_mult
         )
 
         # Load pretrained model
@@ -35,13 +40,13 @@ class TrainerBionit(Trainer):
 
         return model, optimizer
 
-    def create_edge_buckets(self):
+    def create_edge_buckets(self, buckets_weights_mult):
         modalities_edge_buckets = []
         for i in range(len(self.adj)):
 
             edge_weight = self.adj[i].edge_weight
             edge_buckets = torch.unique(get_edge_buckets_by_weights(edge_weight,
-                                                                    self.params.buckets_weights_mult,
+                                                                    buckets_weights_mult,
                                                                     edge_weight.device))
 
             # convert the buckets tensor to list for adding 0 bucket for the node pairs that aren't connected by an edge
