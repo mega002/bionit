@@ -4,8 +4,8 @@
     "inputs/Hu.txt",
     "inputs/Krogan.txt"
   ],
-  "out_name": "outputs/bionit_relative_key_test",
-  "epochs": 3,
+  "out_name": "outputs/bionit_no_edges_3",
+  "epochs": 3000,
   "batch_size": 2048,
   "learning_rate": 0.0005,
   "transformer_config": {
@@ -13,7 +13,7 @@
     "num_hidden_layers": 3,
     "intermediate_size": 512,
     "num_attention_heads": 10,
-    "position_embedding_type": "mult_att",
+    "position_embedding_type": "none",
     "dropout": 0
   },
   "embedding_size": 512,
